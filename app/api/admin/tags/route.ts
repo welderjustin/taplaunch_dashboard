@@ -5,7 +5,7 @@ export async function GET() {
   if (!supabaseAdmin) return NextResponse.json({ error: 'Server misconfigured' }, { status: 500 })
   const { data, error } = await supabaseAdmin
     .from('tags')
-    .select('id, slug, label, current_url, updated_at')
+    .select('id, slug, label, current_url, client_edit_token, updated_at')
     .order('updated_at', { ascending: false })
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
