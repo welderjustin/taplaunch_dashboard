@@ -16,10 +16,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <Image
               src="/brand/taplaunch_logo_master.png"
               alt="TapLaunch"
-              width={28}
-              height={28}
+              width={84}
+              height={84}
             />
-            <span className="font-semibold tracking-wide">TapLaunch Control</span>
+            <span className="font-semibold tracking-wide text-lg">TapLaunch Control</span>
           </div>
         </header>
         <main className="max-w-5xl mx-auto px-4 py-6">{children}</main>
