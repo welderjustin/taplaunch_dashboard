@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 
 export async function GET(_: Request, { params }: { params: { slug: string } }) {
+  if (!supabase) return NextResponse.json({ error: 'Server misconfigured' }, { status: 500 })
   const { slug } = params
   const { data, error } = await supabase
     .from('tags')
