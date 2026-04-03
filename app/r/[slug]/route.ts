@@ -1,9 +1,16 @@
 import { NextResponse } from 'next/server'
+import { supabase } from '@/lib/supabase'
 
-// Placeholder: In v1, this will look up the slug in Supabase and 302 to current_url
 export async function GET(_: Request, { params }: { params: { slug: string } }) {
   const { slug } = params
-  // TODO: fetch from DB by slug
-  const target = 'https://example.com/' + encodeURIComponent(slug)
-  return NextResponse.redirect(target, { status: 302 })
+  const { data, error } = await supabase
+    .from('tags')
+    .select('current_url')
+    .eq('slug', slug)
+    .maybeSingle()
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (!data?.current_url) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
+  return NextResponse.redirect(data.current_url, { status: 302 })
 }
