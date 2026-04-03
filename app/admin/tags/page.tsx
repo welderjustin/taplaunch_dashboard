@@ -114,6 +114,7 @@ export default function AdminTagsPage() {
                 <td className="p-3">{new Date(t.updated_at).toLocaleString()}</td>
                 <td className="p-3 space-x-2">
                   <button onClick={async()=>{ await navigator.clipboard.writeText(`${appBase}/edit/${t.client_edit_token ?? ''}`); alert('Client link copied.') }} className="px-2 py-1 rounded bg-neutral-800 hover:bg-neutral-700">Copy client link</button>
+                  <button onClick={async()=>{ if (confirm('Delete this tag?')) { const r = await fetch(`/api/admin/tags?id=${t.id}`, { method: 'DELETE' }); if (r.ok) { await load() } else { const j = await r.json().catch(()=>({})); alert('Delete failed: ' + (j.error||'unknown')) } } }} className="px-2 py-1 rounded bg-red-700 hover:bg-red-600">Delete</button>
                 </td>
               </tr>
             ))}
