@@ -13,8 +13,8 @@ export async function POST(req: NextRequest) {
   if (!pass) return NextResponse.json({ error: 'Admin not configured' }, { status: 401 })
   if (!password || password !== pass) return NextResponse.json({ error: 'Invalid password' }, { status: 401 })
 
-  // Very short TTL so it effectively prompts often (10 seconds)
-  const ttlMs = 10_000
+  // Short session to avoid re-prompt during quick edits (2 minutes)
+  const ttlMs = 120_000
   const exp = Date.now() + ttlMs
   const sig = hash(pass + '::' + exp)
 
