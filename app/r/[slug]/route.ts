@@ -14,7 +14,7 @@ export async function GET(_: Request, { params }: { params: { slug: string } }) 
   if (!tag?.current_url || !tag?.id) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
   // Log the scan
-  await supabaseAdmin.from('tag_audit').insert({ tag_id: tag.id }).select().single().catch(() => null)
+  await supabaseAdmin.from('tag_scans').insert({ tag_id: tag.id }).select().single().catch(() => null)
 
   return NextResponse.redirect(tag.current_url, { status: 302 })
 }
