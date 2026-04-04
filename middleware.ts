@@ -6,6 +6,8 @@ const ADMIN_PATHS = [/^\/admin(\/.*)?$/, /^\/api\/admin(\/.*)?$/]
 
 export function middleware(req: NextRequest) {
   const { pathname, search } = req.nextUrl
+  const allow = [/^\/admin\/signin$/, /^\/admin\/logout$/, /^\/api\/admin\/signin$/]
+  if (allow.some(rx => rx.test(pathname))) return NextResponse.next()
   const protect = ADMIN_PATHS.some(rx => rx.test(pathname))
   if (!protect) return NextResponse.next()
 
