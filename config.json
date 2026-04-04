@@ -1,0 +1,5 @@
+{
+  "default_model": "gpt-5",
+  "alternate_model": "llama",
+  "notes": "Keep flexibility for switching to cheaper models when necessary"
+}
