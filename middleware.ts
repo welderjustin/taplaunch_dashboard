@@ -1,43 +1,38 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-// Simple Basic Auth gate for admin routes
-const ADMIN_PATHS = [
-  /^\/admin(\/.*)?$/,
-  /^\/api\/admin(\/.*)?$/,
-]
+// App-level auth: require pass every visit (very short session TTL)
+const ADMIN_PATHS = [/^\/admin(\/.*)?$/, /^\/api\/admin(\/.*)?$/]
 
 export function middleware(req: NextRequest) {
-  const { pathname } = req.nextUrl
-
-  // Only protect admin paths
+  const { pathname, search } = req.nextUrl
   const protect = ADMIN_PATHS.some(rx => rx.test(pathname))
   if (!protect) return NextResponse.next()
 
-  const user = process.env.ADMIN_USER
   const pass = process.env.ADMIN_PASS
-
-  if (!user || !pass) {
-    // If not configured, deny to avoid accidental exposure
+  if (!pass) {
     return new NextResponse('Admin auth not configured', { status: 401 })
   }
 
-  const header = req.headers.get('authorization') || ''
-  const [scheme, encoded] = header.split(' ')
-  if (scheme !== 'Basic' || !encoded) {
-    return new NextResponse('Auth required', {
-      status: 401,
-      headers: { 'WWW-Authenticate': 'Basic realm="admin"' },
-    })
-  }
+  // Check short-lived session cookie
+  const cookie = req.cookies.get('admin_session')?.value
+  const now = Date.now()
+  const [stamp, sig] = (cookie || '').split(':')
+  const ok = stamp && sig && Number(stamp) > now && sig === hash(pass + '::' + stamp)
+  if (ok) return NextResponse.next()
 
-  const decoded = Buffer.from(encoded, 'base64').toString('utf8')
-  const [u, p] = decoded.split(':')
-  if (u === user && p === pass) return NextResponse.next()
-
-  return new NextResponse('Unauthorized', { status: 401 })
+  // Not authed → redirect to signin with next
+  const url = req.nextUrl.clone()
+  url.pathname = '/admin/signin'
+  url.search = `?next=${encodeURIComponent(pathname + (search || ''))}`
+  return NextResponse.redirect(url)
 }
 
-export const config = {
-  matcher: ['/admin/:path*', '/api/admin/:path*'],
+// Tiny hash to sign cookie (not cryptographically strong, but fine for this minimal gate)
+function hash(s: string) {
+  let h = 0
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0
+  return String(h >>> 0)
 }
+
+export const config = { matcher: ['/admin/:path*', '/api/admin/:path*'] }

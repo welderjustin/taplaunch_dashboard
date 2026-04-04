@@ -11,6 +11,7 @@ export async function GET() {
       status: 401,
       headers: {
         'Content-Type': 'text/html; charset=utf-8',
+        'Set-Cookie': 'admin_session=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax',
         'WWW-Authenticate': `Basic realm="logout-${nonce}"`,
         'Cache-Control': 'no-store, max-age=0',
       },
