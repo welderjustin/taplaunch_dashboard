@@ -5,6 +5,7 @@ type Tag = { id: string; slug: string; label: string | null; current_url: string
 
 export default function AdminTagsPage() {
   const [items, setItems] = useState<Tag[]>([])
+  const [stats, setStats] = useState<Record<string, { count: number; last_scanned: string | null }>>({})
   const [loading, setLoading] = useState(false)
   const [creating, setCreating] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -19,7 +20,19 @@ export default function AdminTagsPage() {
       const res = await fetch('/api/admin/tags', { cache: 'no-store' })
       const j = await res.json()
       if (!res.ok) throw new Error(j?.error || 'Failed to load')
-      setItems(j.items || [])
+      const list: Tag[] = j.items || []
+      setItems(list)
+      // fetch summaries in parallel (small scale)
+      const pairs = await Promise.all(list.map(async t => {
+        try {
+          const r = await fetch(`/api/analytics/summary?tag_id=${t.id}`, { cache: 'no-store' })
+          const s = await r.json()
+          return [t.id, { count: s.count ?? 0, last_scanned: s.last_scanned ?? null }] as const
+        } catch {
+          return [t.id, { count: 0, last_scanned: null }] as const
+        }
+      }))
+      setStats(Object.fromEntries(pairs))
     } catch (e: any) {
       setError(e.message)
     } finally {
@@ -89,6 +102,8 @@ export default function AdminTagsPage() {
               <th className="text-left p-3">Slug</th>
               <th className="text-left p-3">Current URL</th>
               <th className="text-left p-3">Redirect URL</th>
+              <th className="text-left p-3">Scans</th>
+              <th className="text-left p-3">Last scanned</th>
               <th className="text-left p-3">Updated</th>
               <th className="text-left p-3">Actions</th>
             </tr>
@@ -105,6 +120,8 @@ export default function AdminTagsPage() {
                 <td className="p-3">{t.label ?? '—'}</td>
                 <td className="p-3">{t.slug}</td>
                 <td className="p-3 truncate max-w-[32ch]"><a className="text-blue-400 hover:underline" href={t.current_url} target="_blank" rel="noreferrer">{t.current_url}</a></td>
+                <td className="p-3">{stats[t.id]?.count ?? '—'}</td>
+                <td className="p-3">{stats[t.id]?.last_scanned ? new Date(stats[t.id]!.last_scanned!).toLocaleString() : '—'}</td>
                 <td className="p-3 truncate max-w-[28ch]">
                   <div className="flex items-center gap-2">
                     <a className="text-blue-400 hover:underline" href={`${appBase}/r/${t.slug}`} target="_blank" rel="noreferrer">/r/{t.slug}</a>
@@ -114,6 +131,7 @@ export default function AdminTagsPage() {
                 <td className="p-3">{new Date(t.updated_at).toLocaleString()}</td>
                 <td className="p-3 space-x-2">
                   <button onClick={async()=>{ await navigator.clipboard.writeText(`${appBase}/edit/${t.client_edit_token ?? ''}`); alert('Client link copied.') }} className="px-2 py-1 rounded bg-neutral-800 hover:bg-neutral-700">Copy client link</button>
+                  <button onClick={async()=>{ await navigator.clipboard.writeText(`${appBase}/a/${t.client_edit_token ?? ''}`); alert('Client analytics link copied.') }} className="px-2 py-1 rounded bg-neutral-800 hover:bg-neutral-700">Copy analytics link</button>
                   <button onClick={async()=>{ if (confirm('Delete this tag?')) { const r = await fetch(`/api/admin/tags?id=${t.id}`, { method: 'DELETE' }); if (r.ok) { await load() } else { const j = await r.json().catch(()=>({})); alert('Delete failed: ' + (j.error||'unknown')) } } }} className="px-2 py-1 rounded bg-red-700 hover:bg-red-600">Delete</button>
                 </td>
               </tr>
