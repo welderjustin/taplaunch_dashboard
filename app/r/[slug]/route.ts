@@ -13,8 +13,8 @@ export async function GET(_: Request, { params }: { params: { slug: string } }) 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   if (!tag?.current_url || !tag?.id) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
-  // Log the scan
-  await supabaseAdmin.from('tag_scans').insert({ tag_id: tag.id }).select().single().catch(() => null)
+  // Log the scan (best-effort)
+  await supabaseAdmin.from('tag_scans').insert({ tag_id: tag.id })
 
   return NextResponse.redirect(tag.current_url, { status: 302 })
 }
