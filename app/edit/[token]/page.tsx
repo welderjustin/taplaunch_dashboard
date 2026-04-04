@@ -30,7 +30,7 @@ export default function ClientEditPage({ params }: { params: { token: string } }
       <p className="text-neutral-300">You’re updating the redirect for your NFC tag.</p>
       <form className="space-y-3" onSubmit={onSubmit}>
         <div>
-          <label className="block text-sm text-neutral-300 mb-1">New URL</label>
+          <label className="block text-sm text-neutral-300 mb-1">New Destination URL</label>
           <input
             type="url"
             name="url"

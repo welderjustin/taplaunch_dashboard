@@ -86,7 +86,7 @@ export default function AdminTagsPage() {
           <input value={label} onChange={(e)=>setLabel(e.target.value)} placeholder="Optional label" className="w-full px-3 py-2 rounded bg-neutral-900 border border-neutral-800" />
         </div>
         <div className="sm:col-span-2">
-          <label className="block text-sm text-neutral-300 mb-1">Current URL</label>
+          <label className="block text-sm text-neutral-300 mb-1">Destination URL</label>
           <input type="url" value={url} onChange={(e)=>setUrl(e.target.value)} required placeholder="https://target.com" className="w-full px-3 py-2 rounded bg-neutral-900 border border-neutral-800" />
         </div>
         <button disabled={creating} className="px-3 py-2 rounded bg-blue-600 hover:bg-blue-500 disabled:opacity-60">{creating ? 'Creating…' : 'Create tag'}</button>
@@ -100,10 +100,10 @@ export default function AdminTagsPage() {
             <tr>
               <th className="text-left p-3">Label</th>
               <th className="text-left p-3">Slug</th>
-              <th className="text-left p-3">Current URL</th>
+              <th className="text-left p-3">Destination URL</th>
               <th className="text-left p-3">Redirect URL</th>
               <th className="text-left p-3">Scans</th>
-              <th className="text-left p-3">Last scanned</th>
+              <th className="text-left p-3">Tag URL</th>
               <th className="text-left p-3">Updated</th>
               <th className="text-left p-3">Actions</th>
             </tr>
@@ -121,14 +121,14 @@ export default function AdminTagsPage() {
                 <td className="p-3">{t.slug}</td>
                 <td className="p-3 truncate max-w-[32ch]"><a className="text-blue-400 hover:underline" href={t.current_url} target="_blank" rel="noreferrer">{t.current_url}</a></td>
                 <td className="p-3">{stats[t.id]?.count ?? '—'}</td>
-                <td className="p-3">{stats[t.id]?.last_scanned ? new Date(stats[t.id]!.last_scanned!).toLocaleString() : '—'}</td>
+                <td className="p-3">{stats[t.id]?.last_scanned ? new Intl.DateTimeFormat('en-CA', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'America/Edmonton' }).format(new Date(stats[t.id]!.last_scanned!)) : '—'}</td>
                 <td className="p-3 truncate max-w-[28ch]">
                   <div className="flex items-center gap-2">
                     <a className="text-blue-400 hover:underline" href={`${appBase}/r/${t.slug}`} target="_blank" rel="noreferrer">/r/{t.slug}</a>
                     <button onClick={async()=>{ await navigator.clipboard.writeText(`${appBase}/r/${t.slug}`); }} className="px-2 py-0.5 rounded bg-neutral-800 hover:bg-neutral-700 text-xs">Copy</button>
                   </div>
                 </td>
-                <td className="p-3">{new Date(t.updated_at).toLocaleString()}</td>
+                <td className="p-3">{new Intl.DateTimeFormat('en-CA', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'America/Edmonton' }).format(new Date(t.updated_at))}</td>
                 <td className="p-3 space-x-2">
                   <button onClick={async()=>{ await navigator.clipboard.writeText(`${appBase}/edit/${t.client_edit_token ?? ''}`); alert('Client link copied.') }} className="px-2 py-1 rounded bg-neutral-800 hover:bg-neutral-700">Copy client link</button>
                   <button onClick={async()=>{ await navigator.clipboard.writeText(`${appBase}/a/${t.client_edit_token ?? ''}`); alert('Client analytics link copied.') }} className="px-2 py-1 rounded bg-neutral-800 hover:bg-neutral-700">Copy analytics link</button>

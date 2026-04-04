@@ -48,7 +48,7 @@ export default function ClientAnalyticsPage({ params }: { params: { token: strin
             </div>
             <div>
               <div className="text-neutral-300 text-sm">Last scanned</div>
-              <div>{summary.last_scanned ? new Date(summary.last_scanned).toLocaleString() : '—'}</div>
+              <div>{summary.last_scanned ? new Intl.DateTimeFormat('en-CA', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'America/Edmonton' }).format(new Date(summary.last_scanned)) : '—'}</div>
             </div>
           </div>
         </div>
