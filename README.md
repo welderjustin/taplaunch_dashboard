@@ -27,7 +27,13 @@ NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 APP_BASE_URL=http://localhost:3000
+ADMIN_USER=your_admin_username
+ADMIN_PASS=your_admin_password
 ```
+
+Basic auth (optional)
+- Set ADMIN_USER and ADMIN_PASS to protect /admin and /api/admin with HTTP Basic Auth.
+- For Vercel, add both vars in Project → Settings → Environment Variables, then redeploy.
 
 Supabase setup
 1) Create a new project at supabase.com
