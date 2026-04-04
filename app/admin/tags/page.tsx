@@ -102,7 +102,7 @@ export default function AdminTagsPage() {
               <th className="text-left p-3">Slug</th>
               <th className="text-left p-3">Destination URL</th>
               <th className="text-left p-3">Scans</th>
-              <th className="text-left p-3">Scans</th>
+              <th className="text-left p-3">Time</th>
               <th className="text-left p-3">Tag URL</th>
               <th className="text-left p-3">Updated</th>
               <th className="text-left p-3">Actions</th>
