@@ -135,7 +135,7 @@ export default function AdminTagsPage() {
                 </td>
                 <td className="p-3">{new Intl.DateTimeFormat('en-CA', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'America/Edmonton' }).format(new Date(t.updated_at))}</td>
                 <td className="p-3 space-x-2">
-                  <a href={`${appBase}/edit/${t.client_edit_token ?? ''}`} target="_blank" rel="noreferrer" className="px-2 py-1 rounded bg-blue-600 hover:bg-blue-500">Open edit</a>
+                  <a href={`${appBase}/edit/${t.client_edit_token ?? ''}?next=/admin/tags`} target="_blank" rel="noreferrer" className="px-2 py-1 rounded bg-blue-600 hover:bg-blue-500">Open edit</a>
                   <button onClick={async()=>{ await navigator.clipboard.writeText(`${appBase}/edit/${t.client_edit_token ?? ''}`); alert('Client link copied.') }} className="px-2 py-1 rounded bg-neutral-800 hover:bg-neutral-700">Copy client link</button>
                   <button onClick={async()=>{ await navigator.clipboard.writeText(`${appBase}/a/${t.client_edit_token ?? ''}`); alert('Client analytics link copied.') }} className="px-2 py-1 rounded bg-neutral-800 hover:bg-neutral-700">Copy analytics link</button>
                   <button onClick={async()=>{ if (confirm('Delete this tag?')) { const r = await fetch(`/api/admin/tags?id=${t.id}`, { method: 'DELETE' }); if (r.ok) { await load() } else { const j = await r.json().catch(()=>({})); alert('Delete failed: ' + (j.error||'unknown')) } } }} className="px-2 py-1 rounded bg-red-700 hover:bg-red-600">Delete</button>

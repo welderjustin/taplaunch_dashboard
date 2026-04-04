@@ -1,11 +1,14 @@
 'use client'
 import Link from 'next/link'
 import { useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 
 export default function ClientEditPage({ params }: { params: { token: string } }) {
   const { token } = params
   const [url, setUrl] = useState('')
   const [status, setStatus] = useState<null | 'saving' | 'ok' | string>(null)
+  const search = useSearchParams()
+  const next = search.get('next') || ''
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -19,6 +22,10 @@ export default function ClientEditPage({ params }: { params: { token: string } }
       const j = await res.json()
       if (!res.ok) throw new Error(j?.error || 'Failed')
       setStatus('ok')
+      // If admin passed a return URL, go back there after save
+      if (next) {
+        window.location.href = next
+      }
     } catch (err: any) {
       setStatus(err.message)
     }
