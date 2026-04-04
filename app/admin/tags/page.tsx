@@ -72,8 +72,13 @@ export default function AdminTagsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-semibold">Tags</h1>
-        <p className="text-neutral-300">Create, list, and copy client edit links.</p>
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h1 className="text-xl font-semibold">Tags</h1>
+            <p className="text-neutral-300">Create, list, and copy client edit links.</p>
+          </div>
+          <a href="/admin/logout" className="px-3 py-2 rounded bg-neutral-800 hover:bg-neutral-700 text-sm">Logout</a>
+        </div>
       </div>
 
       <form className="grid gap-3 sm:grid-cols-4 items-end" onSubmit={onCreate}>
